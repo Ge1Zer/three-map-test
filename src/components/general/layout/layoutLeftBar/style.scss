@@ -1,0 +1,14 @@
+.layoutleftbar__container{
+  height: 100%;
+  .layoutleftbar__content{
+    height: 100%;
+    display: flex;
+    .layoutleftbar__aside{
+      flex: 0 0 300px;
+      overflow: auto;
+    }
+    .layoutleftbar__main{
+      flex: 1 0 auto;
+    }
+  }
+}

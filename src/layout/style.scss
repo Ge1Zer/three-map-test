@@ -1,0 +1,17 @@
+.menuLay__container{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  .menuLay__menu{
+    flex: 0 0 50px;
+    background-color: #c9c9c9;
+  }
+  .menuLay__main{
+    flex: 1 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

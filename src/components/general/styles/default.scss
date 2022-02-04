@@ -1,0 +1,17 @@
+@import "src/components/general/styles/font";
+@import "src/components/general/styles/color";
+
+
+*{
+  margin: 0;
+  padding: 0;
+  -moz-box-sizing: border-box; /* Для Firefox */
+  -webkit-box-sizing: border-box; /* Для Safari и Chrome */
+  box-sizing: border-box; /* Для IE и Opera */
+  border-radius: 2px;
+  font-family: $font-family-primary;
+}
+html, body, #root{
+  height: 100%;
+  width: 100%;
+}
