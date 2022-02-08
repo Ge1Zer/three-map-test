@@ -27,9 +27,9 @@ import TileLayerCustom from "./layers/tileLayer";
 
 const Leaflet = () => {
   
-  const {fieldsList} = useTypedSelector(state => state.fieldsStore)
+  const {fieldsList, selectField} = useTypedSelector(state => state.fieldsStore)
   const {unitsPosition} = useTypedSelector(state => state.unitsStore)
-  const {connectFetchStatusUnits, disconnectFetchStatusUnits} = useActions()
+  const {connectFetchStatusUnits, disconnectFetchStatusUnits, SetSelectField} = useActions()
   
   let [fields, setFields] = useState([])
   let [units, setUnit] = useState([])
@@ -38,7 +38,7 @@ const Leaflet = () => {
     if (fieldsList.length) {
       let list = fieldsList.flatMap(i => {
         if (i.geometry?.coordinates) {
-          return [i.geometry.coordinates]
+          return [i]
         }
         return []
       })
@@ -57,30 +57,42 @@ const Leaflet = () => {
         center={[55.2694, 54.67340]}
         preferCanvas={true}
         transform3DLimit={0}
-        
-        // renderer={L.canvas()}>
+
+
         zoom={10}
         maxZoom={18}
         wheelDebounceTime={20}
         wheelPxPerZoomLevel={100}
         animate={false} // при стандарте ни на что не влияет
-        // zoomAnimation={false}
-        // fadeAnimation={false}
+
         zoomAnimationThreshold={3} //default - 4
-        duration={0.1} // 0.25
-        easeLinearity={0.1} // 0.25
-        
+        duration={0.25} // 0.1
+        easeLinearity={0.25} // 0.1
+
         markerZoomAnimation={true}
-        
-        
+
         zoomDelta={0.1}
         scrollWheelZoom={true}
+  
+        
+        renderer={L.canvas()}>
+        {/*zoomAnimation={false}*/}
+        {/*fadeAnimation={false}*/}
       >
+        
         
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
         
         
-        <FieldsLayerContainer fields={fields}/>
+        <FieldsLayerContainer
+          fields={fields}
+          selectField={selectField}
+          SetSelectField={SetSelectField}
+        />
+        {/*<FieldsLayerContainer fields={fields}/>*/}
+        {/*<FieldsLayerContainer fields={fields}/>*/}
+        {/*<FieldsLayerContainer fields={fields}/>*/}
+        {/*<FieldsLayerContainer fields={fields}/>*/}
         <UnitsLayerContainer units={units}/>
       
       </MapContainer>
