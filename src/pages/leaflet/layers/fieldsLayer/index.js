@@ -18,18 +18,21 @@ const FieldsLayerContainer = ({children, ...props}) => {
   } = props
   
   const pixiOverlay = useRef(null)
+  const firstDraw = useRef(true)
+  const projectedPolygon = useRef([])
   const map = useMap();
+  const selectPolygon = useRef({})
   
   let [selectFieldCopy, setSelectFieldCopy] = useState(selectField)
   
   
   useEffect(() => {
-    let projectedPolygon, prevZoom, firstDraw = true
+    let prevZoom;
     
     
     if (fields.length) {
-  
-      pixiOverlay?.current?.remove()
+      
+      // pixiOverlay?.current?.remove()
       //вешает обработчик корый отрабатывает постоянно как двигается карта
       pixiOverlay.current = L.pixiOverlay((utils, eventOrCustomData) => {
         let zoom = utils.getMap().getZoom();
@@ -37,85 +40,97 @@ const FieldsLayerContainer = ({children, ...props}) => {
         let renderer = utils.getRenderer();
         let project = utils.latLngToLayerPoint;
         let scale = utils.getScale() | 5;
+        
+        
+        const createEndDraw = (drawPolygon, coordinate, container, renderer) => {
   
-  
-  
-        const createEndDraw = (drawPolygon, coordinate) => {
+          //=============================================================================+++>
+          const drawGeometry = ({polygon, coordinate}, isSelected, ) =>{
+            polygon.clear()
+            polygon.lineStyle(1 / 2, isSelected ? 0x3388ff : 0xCC0000, 0.5);
+            polygon.beginFill(isSelected ? 0xCC0000 : 0x3388ff , 0.5);
+    
+            coordinate.map(item => item.forEach((coords, index) => {
+              if (index === 0) polygon.moveTo(coords.x, coords.y);
+              else polygon.lineTo(coords.x, coords.y);
+            }))
+    
+            polygon.endFill();
+            container.addChild(polygon);
+          }
+          //=============================================================================+++>
+          
           
           let polygon = new PIXI.Graphics();
-          polygon.clear();
           
           polygon.interactive = true
           polygon.buttonMode = true
-          
-          polygon.lineStyle(1 / 2, 0x3388ff, 1);
-          polygon.beginFill( 0xCC0000, 1);
-          
-          if(drawPolygon.glid === selectField.glid ){
-            polygon.lineStyle(1 / 2, 0xCC0000, 1);
-            polygon.beginFill( 0x3388ff , 1);
-          }
+          drawGeometry({polygon, coordinate}, false)
          
-    
-          coordinate.map(item => item.forEach((coords, index) => {
-            if (index === 0) polygon.moveTo(coords.x, coords.y);
-            else polygon.lineTo(coords.x, coords.y);
-          }))
-    
+          
+         
+          //=========================================================>
           polygon.on('click', (event) => {
-            SetSelectField(drawPolygon)
+            
+            if(selectPolygon.current?.polygon !== polygon){
+              drawGeometry({polygon, coordinate}, true)
+              
+              selectPolygon.current?.polygon && drawGeometry(selectPolygon.current, false)
+              
+
+              selectPolygon.current = {polygon, coordinate}
+              SetSelectField(drawPolygon)
+              renderer.render(container)
+            }
           })
-    
-          polygon.endFill();
-          container.addChild(polygon);
+          
         }
         
         
-        
-        if (firstDraw) {
-          projectedPolygon = fields.map(arrayCoords => ({
+        if (firstDraw.current) {
+          testSpeed(() => projectedPolygon.current = fields.map(arrayCoords => ({
             ...arrayCoords,
             geometry: {
               ...arrayCoords.geometry,
               coordinates: arrayCoords.geometry.coordinates.map(coords => coords.map(coord => project([coord[1], coord[0]])))
             }
-          }))
+          })), "перевод координат в читаемое расширение {x, y}")
         }
         
-        if (firstDraw) {
-          projectedPolygon.map((polygons) => {
-              createEndDraw(polygons, polygons.geometry.coordinates, scale)
-          });
+        if (firstDraw.current) {
+          testSpeed(() => projectedPolygon.current.map((polygons) => {
+            createEndDraw(polygons, polygons.geometry.coordinates, container, renderer)
+          }), 'первое запонение canvas - объектами')
         }
-  
-  
-        if (!firstDraw) {
-          projectedPolygon.map((polygons) => {
-            if(polygons.glid === (selectField.glid | selectFieldCopy.glid)){
-              createEndDraw(polygons, polygons.geometry.coordinates, scale)
+        
+        
+        if (!firstDraw.current && (selectField.glid || selectFieldCopy.glid)) {
+          testSpeed(() => projectedPolygon.current.map((polygons) => {
+            if (polygons.glid === (selectField.glid | selectFieldCopy.glid)) {
+              createEndDraw(polygons, polygons.geometry.coordinates, container, renderer)
             }
-          });
+          }), "перерисовка только 2 полей")
         }
-
         
         
-        firstDraw = false;
+        firstDraw.current = false;
         prevZoom = zoom;
         
-        testSpeed(()=>renderer.render(container))
+        testSpeed(() => renderer.render(container), "перерисовка")
       }, new PIXI.Container());
-  
+      
       
       pixiOverlay.current.addTo(map);
       
       setSelectFieldCopy(selectField)
     }
- 
-  }, [fields.length, selectField.glid])
+    
+    
+  }, [fields.length])
   
   
   return null
- 
+  
 }
 export default FieldsLayerContainer
 

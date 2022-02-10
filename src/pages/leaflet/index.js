@@ -22,6 +22,7 @@ import FieldsLayerContainer from "./layers/fieldsLayer";
 import UnitsLayerContainer from "./layers/unitsLayer";
 import {GridLayer} from "leaflet/dist/leaflet-src.esm";
 import TileLayerCustom from "./layers/tileLayer";
+import {testSpeed} from "../../util/testSpeed";
 
 // import './layers/tileLayer/buffer';
 
@@ -36,12 +37,12 @@ const Leaflet = () => {
   
   useEffect(() => {
     if (fieldsList.length) {
-      let list = fieldsList.flatMap(i => {
+      let list = testSpeed(()=>fieldsList.flatMap(i => {
         if (i.geometry?.coordinates) {
           return [i]
         }
         return []
-      })
+      }), 'формирование списка только из координат')
       setFields(list)
     }
   }, [fieldsList])
@@ -89,6 +90,24 @@ const Leaflet = () => {
           selectField={selectField}
           SetSelectField={SetSelectField}
         />
+        
+        {/*<FieldsLayerContainer*/}
+        {/*  fields={fields}*/}
+        {/*  selectField={selectField}*/}
+        {/*  SetSelectField={SetSelectField}*/}
+        {/*/>*/}
+        
+        {/*<FieldsLayerContainer*/}
+        {/*  fields={fields}*/}
+        {/*  selectField={selectField}*/}
+        {/*  SetSelectField={SetSelectField}*/}
+        {/*/>*/}
+        
+        {/*<FieldsLayerContainer*/}
+        {/*  fields={fields}*/}
+        {/*  selectField={selectField}*/}
+        {/*  SetSelectField={SetSelectField}*/}
+        {/*/>*/}
         {/*<FieldsLayerContainer fields={fields}/>*/}
         {/*<FieldsLayerContainer fields={fields}/>*/}
         {/*<FieldsLayerContainer fields={fields}/>*/}

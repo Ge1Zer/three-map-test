@@ -1,8 +1,9 @@
 import {keyWords} from "./action";
 import {recursiveMethod} from "../../util/recursive";
+import {testSpeed} from "../../util/testSpeed";
 
 let initState = {
-  fieldsList: [],
+  fieldsList: new Map([]),
   selectField: {},
   
   errorsFieldsGeoZone: "",
@@ -14,11 +15,11 @@ const fieldLayerStore = (state = initState, action) => {
   switch (action.type) {
     case keyWords.FETCH_FULL_LIST_FIELDS:
       
-      let fields = recursiveMethod(action.payload.data, 'data')
+      let fieldsList = testSpeed(()=>recursiveMethod(action.payload.data, 'data'), "рекурсивное объединения всех вложенных полей в единый список")
       
       return {
         ...state,
-        fieldsList: [...fields],
+        fieldsList,
       }
     case keyWords.SET_SELECT_FIELD:
       
