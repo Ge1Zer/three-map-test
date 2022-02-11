@@ -11,6 +11,7 @@ const Menu = () =>{
         <li><NavLink to={'/mapbox'}>mapbox</NavLink></li>
         <li><NavLink to={'/leaflet'}>leaflet</NavLink></li>
         <li><NavLink to={'/openlayers'}>openlayers</NavLink></li>
+        <li><NavLink to={'/holst'}>holst</NavLink></li>
       </ul>
   )
 }

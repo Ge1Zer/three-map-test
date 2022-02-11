@@ -32,62 +32,96 @@ const FieldsLayerContainer = ({children, ...props}) => {
     
     if (fields.length) {
       
-      // pixiOverlay?.current?.remove()
+      pixiOverlay?.current?.remove()
       //вешает обработчик корый отрабатывает постоянно как двигается карта
       pixiOverlay.current = L.pixiOverlay((utils, eventOrCustomData) => {
-        let zoom = utils.getMap().getZoom();
-        let container = utils.getContainer();
-        let renderer = utils.getRenderer();
-        let project = utils.latLngToLayerPoint;
-        let scale = utils.getScale() | 5;
         
-        
-        const createEndDraw = (drawPolygon, coordinate, container, renderer) => {
+        let settingOverlay = {
+          zoom: utils.getMap().getZoom(),
+          container: utils.getContainer(),
+          renderer: utils.getRenderer(),
+          project: utils.latLngToLayerPoint,
+          scale: utils.getScale() | 5
+        }
+        let {zoom, container, renderer, project, scale} = settingOverlay
   
+  
+        //=============================================================================+++>
+        const createEndDraw = (field, settingOverlay) => {
           //=============================================================================+++>
-          const drawGeometry = ({polygon, coordinate}, isSelected, ) =>{
+          const drawGeometry = ({field, settingOverlay, polygon}, isSelected) => {
+            let {container} = settingOverlay
+            //работа с полигоном
             polygon.clear()
-            polygon.lineStyle(1 / 2, isSelected ? 0x3388ff : 0xCC0000, 0.5);
-            polygon.beginFill(isSelected ? 0xCC0000 : 0x3388ff , 0.5);
-    
-            coordinate.map(item => item.forEach((coords, index) => {
+  
+            polygon.lineStyle(1 / 10, isSelected ? 0x3388ff : 0xCC0000, 0.5);
+            polygon.beginFill(isSelected ? 0xCC0000 : 0x3388ff, 0.5);
+
+            field.geometry.coordinates.map(item => item.forEach((coords, index) => {
               if (index === 0) polygon.moveTo(coords.x, coords.y);
               else polygon.lineTo(coords.x, coords.y);
             }))
-    
+  
+            // text.text = field.name
+            // text.anchor.x = 0.5
+            // text.x = polygon.width / 2;
+            //
+            // text.anchor.x = 0.5
+            // text.x = polygon.width / 2;
+            //
+            // text.anchor.y = 0.5
+            // text.y = polygon.height / 2;
+            
+            
             polygon.endFill();
+  
+            // polygon.addChild(text)
+            
             container.addChild(polygon);
+           
           }
           //=============================================================================+++>
           
-          
+          //инициализация фигур и текста
           let polygon = new PIXI.Graphics();
-          
+          // let text = new PIXI.Text()
+          //настройка
           polygon.interactive = true
           polygon.buttonMode = true
-          drawGeometry({polygon, coordinate}, false)
-         
           
-         
+          // text.style = {
+          //   fontFamily: 'normal 15px Arial',
+          //   fill: "black",
+          //   align: 'center',
+          //   stroke: '#D68C1F',
+          //   strokeThickness: 1
+          // }
+          //================================>
+          
+          let selectFieldSetting = {field, settingOverlay, polygon}
+          // let selectFieldSetting = {field, settingOverlay, polygon, text}
+          
+          
+          drawGeometry(selectFieldSetting, false)
           //=========================================================>
+          
           polygon.on('click', (event) => {
-            
-            if(selectPolygon.current?.polygon !== polygon){
-              drawGeometry({polygon, coordinate}, true)
+            if (selectPolygon.current?.field?.glid !== field.glid) {
               
-              selectPolygon.current?.polygon && drawGeometry(selectPolygon.current, false)
-              
-
-              selectPolygon.current = {polygon, coordinate}
-              SetSelectField(drawPolygon)
+              drawGeometry(selectFieldSetting, true)
+              selectPolygon.current?.field && drawGeometry(selectPolygon.current, false)
+              selectPolygon.current = selectFieldSetting
+              SetSelectField(field)
               renderer.render(container)
             }
           })
           
         }
+        //================================================================>
         
         
         if (firstDraw.current) {
+          console.log(fields)
           testSpeed(() => projectedPolygon.current = fields.map(arrayCoords => ({
             ...arrayCoords,
             geometry: {
@@ -98,20 +132,10 @@ const FieldsLayerContainer = ({children, ...props}) => {
         }
         
         if (firstDraw.current) {
-          testSpeed(() => projectedPolygon.current.map((polygons) => {
-            createEndDraw(polygons, polygons.geometry.coordinates, container, renderer)
+          testSpeed(() => projectedPolygon.current.map((field) => {
+            createEndDraw(field, settingOverlay)
           }), 'первое запонение canvas - объектами')
         }
-        
-        
-        if (!firstDraw.current && (selectField.glid || selectFieldCopy.glid)) {
-          testSpeed(() => projectedPolygon.current.map((polygons) => {
-            if (polygons.glid === (selectField.glid | selectFieldCopy.glid)) {
-              createEndDraw(polygons, polygons.geometry.coordinates, container, renderer)
-            }
-          }), "перерисовка только 2 полей")
-        }
-        
         
         firstDraw.current = false;
         prevZoom = zoom;
@@ -121,8 +145,6 @@ const FieldsLayerContainer = ({children, ...props}) => {
       
       
       pixiOverlay.current.addTo(map);
-      
-      setSelectFieldCopy(selectField)
     }
     
     

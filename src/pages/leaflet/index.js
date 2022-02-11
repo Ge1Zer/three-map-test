@@ -23,6 +23,7 @@ import UnitsLayerContainer from "./layers/unitsLayer";
 import {GridLayer} from "leaflet/dist/leaflet-src.esm";
 import TileLayerCustom from "./layers/tileLayer";
 import {testSpeed} from "../../util/testSpeed";
+import TitleLayer from "./layers/titleLayer";
 
 // import './layers/tileLayer/buffer';
 
@@ -55,12 +56,13 @@ const Leaflet = () => {
   return (
     <MenuLayout>
       <MapContainer
-        center={[55.2694, 54.67340]}
+        center={[53.02, 38]}
+        // center={[55.2694, 54.67340]}
         preferCanvas={true}
         transform3DLimit={0}
 
 
-        zoom={10}
+        zoom={15}
         maxZoom={18}
         wheelDebounceTime={20}
         wheelPxPerZoomLevel={100}
@@ -83,13 +85,20 @@ const Leaflet = () => {
         
         
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-        
+  
+        {/*<TitleLayer*/}
+        {/*  fields={fields}*/}
+        {/*/>*/}
         
         <FieldsLayerContainer
           fields={fields}
           selectField={selectField}
           SetSelectField={SetSelectField}
         />
+        
+        
+        
+      
         
         {/*<FieldsLayerContainer*/}
         {/*  fields={fields}*/}

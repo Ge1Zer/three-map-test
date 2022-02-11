@@ -17,6 +17,7 @@ import OpenLayers from './pages/openLayers';
 import {useActions} from "./hooks/useActions";
 import MenuLayout from "./layout/MenuLayout";
 import {useTypedSelector} from "./hooks/useTypedSelector";
+import Holst from "./pages/holst";
 
 
 
@@ -56,6 +57,7 @@ function App() {
             <RouteWithAuth path={'/mapbox'} component={Mapbox} />
             <RouteWithAuth path={'/leaflet'} component={Leaflet} />
             <RouteWithAuth path={'/openlayers'} component={OpenLayers} />
+            <RouteWithAuth path={'/holst'} component={Holst} />
             <Route path={'/log'} component={AuthContainer}/>
         </Switch>
     </>
