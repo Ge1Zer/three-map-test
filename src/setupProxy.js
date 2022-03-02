@@ -10,19 +10,19 @@ module.exports = function(app) {
 //     );
     app.use(
         createProxyMiddleware('/auth',{
-            target: 'https://test2.agrosignal.com',
+            target: 'https://test3.agrosignal.com',
             changeOrigin: true,
         })
     );
     app.use(
         createProxyMiddleware('/fieldTree',{
-            target: 'https://test2.agrosignal.com',
+            target: 'https://test3.agrosignal.com',
             changeOrigin: true,
         })
     );
     app.use(
         createProxyMiddleware('/unitTree',{
-            target: 'https://test2.agrosignal.com',
+            target: 'https://test3.agrosignal.com',
             changeOrigin: true,
         })
     );
